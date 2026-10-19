@@ -1,0 +1,44 @@
+{
+  "features": [
+    "sbytes",
+    "smean",
+    "sload",
+    "dbytes",
+    "rate",
+    "sttl",
+    "dttl",
+    "ct_state_ttl"
+  ],
+  "log1p_applied_to": [
+    "sbytes",
+    "smean",
+    "sload",
+    "dbytes",
+    "rate"
+  ],
+  "angle_range": [
+    0.0,
+    3.141592653589793
+  ],
+  "min": {
+    "sbytes": 3.367295829986474,
+    "smean": 3.367295829986474,
+    "sload": 0.0,
+    "dbytes": 0.0,
+    "rate": 0.0,
+    "sttl": 0.0,
+    "dttl": 0.0,
+    "ct_state_ttl": 0.0
+  },
+  "max": {
+    "sbytes": 16.37778202538439,
+    "smean": 7.316548177182976,
+    "sload": 22.513023346422965,
+    "dbytes": 16.50032972950973,
+    "rate": 13.81551156096377,
+    "sttl": 255.0,
+    "dttl": 254.0,
+    "ct_state_ttl": 6.0
+  },
+  "total_rows": 140272
+}

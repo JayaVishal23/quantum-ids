@@ -1,0 +1,4 @@
+accuracy,precision,recall,f1,roc_auc,false_positive_rate,tn,fp,fn,tp,last_round_accuracy,last_round_precision,last_round_recall,last_round_f1,last_round_roc_auc,last_round_false_positive_rate,seed,parameters,best_round,rounds,total_seconds,update_bytes_per_client,secure,signature,aggregator,attack,malicious_client,handshake_bytes_per_round,upload_bytes_per_round,download_bytes_per_round,total_bytes_per_round,crypto_seconds_per_round,crypto_share_of_round
+0.4494,0.0,0.0,0.0,0.46213533126705164,0.0,2247,0,2753,0,0.4494,0.0,0.0,0.0,0.5,0.0,42,289,1,20,4.036932999999408,1156,none,-,fedavg,model_poison,2,0.0,0.0,0.0,0.0,0.0,0.0
+0.4494,0.0,0.0,0.0,0.5124912887846103,0.0,2247,0,2753,0,0.4494,0.0,0.0,0.0,0.5,0.0,43,289,1,20,2.3581075000038254,1156,none,-,fedavg,model_poison,2,0.0,0.0,0.0,0.0,0.0,0.0
+0.4494,0.0,0.0,0.0,0.7271392732385158,0.0,2247,0,2753,0,0.4494,0.0,0.0,0.0,0.5,0.0,44,289,1,20,2.253550700002961,1156,none,-,fedavg,model_poison,2,0.0,0.0,0.0,0.0,0.0,0.0

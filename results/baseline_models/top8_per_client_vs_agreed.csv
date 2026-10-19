@@ -1,0 +1,9 @@
+position,client_1,client_2,client_3,agreed
+1,sbytes,sbytes,sbytes,sbytes
+2,sload,sttl,smean,smean
+3,smean,dbytes,sload,sload
+4,ct_dst_sport_ltm,dttl,sttl,dbytes
+5,rate,ct_state_ttl,dbytes,rate
+6,dur,rate,rate,sttl
+7,ct_state_ttl,dur,dttl,dttl
+8,dbytes,smean,dmean,ct_state_ttl

@@ -1,0 +1,17 @@
+# Exact versions this project was built and tested with (Python 3.12.10, Windows 11).
+# Install:  pip install -r requirements.txt
+# PyTorch CPU build: pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
+# Check:    python -m common.check_env
+
+numpy==2.1.3
+pandas==2.2.3
+scikit-learn==1.6.1
+scipy==1.15.2
+matplotlib==3.10.0
+
+torch==2.14.0
+pennylane==0.45.1
+pennylane-lightning==0.45.0
+
+# Includes ML-KEM, ML-DSA, X25519, Ed25519, AES-GCM and HKDF (via OpenSSL)
+cryptography==50.0.1

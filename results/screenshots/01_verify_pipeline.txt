@@ -1,0 +1,79 @@
+
+======================================================================
+1. RAW DATASET
+======================================================================
+  training : 175,341 rows, 45 columns  normal 56,000 (31.9%) | attack 119,341 (68.1%)
+  testing  : 82,332 rows, 45 columns  normal 37,000 (44.9%) | attack 45,332 (55.1%)
+
+  attack families in training: 9
+  Normal 56,000, Generic 40,000, Exploits 33,393, Fuzzers 18,184, DoS 12,264, Reconnaissance 10,491, Analysis 2,000, Backdoor 1,746, Shellcode 1,133, Worms 130
+
+  columns never used as model input: id, attack_cat, label
+
+======================================================================
+2. SPLIT INTO 3 CLIENTS (done on raw rows, before any preprocessing)
+======================================================================
+ client  train rows  val rows  normal  attack                                 attack families
+      1       48533     12134   18667   42000                               Analysis, Generic
+      2       56195     14049   18667   51577                               Exploits, Fuzzers
+      3       35544      8886   18666   25764 Backdoor, DoS, Reconnaissance, Shellcode, Worms
+
+  rows across all clients: 175,341 (original file has 175,341)
+  any row in two clients?  False
+  validation rows are held out of training: yes, 20% per client
+
+======================================================================
+3. FEATURE SELECTION (done inside each client)
+======================================================================
+  candidates scored by each client : 39 numeric features
+  what each client sent the server : 39 scores + its row count
+  method                           : mutual information, averaged across clients weighted by row count
+  agreed features (8)             : sbytes, smean, sload, dbytes, rate, sttl, dttl, ct_state_ttl
+
+  each client's rank for the agreed features (they disagree = non-IID data):
+              client_1_rank  client_2_rank  client_3_rank
+feature                                                  
+sbytes                    1              1              1
+smean                     3              8              2
+sload                     2             14              3
+dbytes                    8              3              5
+rate                      5              6              6
+sttl                     16              2              4
+dttl                     10              4              7
+ct_state_ttl              7              5             10
+
+======================================================================
+4. SCALING (shared values, computed from client summaries only)
+======================================================================
+              log1p applied  global min  global max
+sbytes                 True       3.367      16.378
+smean                  True       3.367       7.317
+sload                  True       0.000      22.513
+dbytes                 True       0.000      16.500
+rate                   True       0.000      13.816
+sttl                  False       0.000     255.000
+dttl                  False       0.000     254.000
+ct_state_ttl          False       0.000       6.000
+
+  every client sent only: count, min and max per feature
+  all values scaled into [0.0, 3.141592653589793] (the rotation-angle range for a qubit)
+
+======================================================================
+5. PREPARED DATA USED BY THE MODELS
+======================================================================
+             data  rows  features  min   max attack share
+   client 1 train  3000         8  0.0 3.142        69.2%
+     client 1 val   750         8  0.0 3.142        69.2%
+   client 2 train  3000         8  0.0 3.142        73.4%
+     client 2 val   750         8  0.0 3.142        73.5%
+   client 3 train  3000         8  0.0 3.142        58.0%
+     client 3 val   750         8  0.0 3.142        58.0%
+test (evaluation)  5000         8  0.0 3.142        55.1%
+
+  checks:
+    every value inside [0, pi]:            True
+    missing values anywhere:               False
+    test set never used for training:      yes, it is only loaded by the evaluator
+
+All checks completed.
+

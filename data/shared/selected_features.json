@@ -1,0 +1,18 @@
+{
+  "features": [
+    "sbytes",
+    "smean",
+    "sload",
+    "dbytes",
+    "rate",
+    "sttl",
+    "dttl",
+    "ct_state_ttl"
+  ],
+  "method": "mutual information, averaged across clients weighted by row count",
+  "client_rows": {
+    "client_1": 48533,
+    "client_2": 56195,
+    "client_3": 35544
+  }
+}

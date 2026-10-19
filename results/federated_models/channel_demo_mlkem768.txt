@@ -1,0 +1,53 @@
+Key exchange: mlkem768 | signatures: mldsa65 | encryption: AES-256-GCM
+
+0. Setup, done once before training
+  server knows client 1's public key (registration)
+  client 1 knows the server's public key (pinning)
+
+1. Handshake for round 1
+  client -> server  hello                          121 bytes
+  server -> client  mlkem768 public key + signature   4,654 bytes
+      kem_public_key             1,184 bytes
+      signature                  3,309 bytes
+  client checked the server's signature with the pinned key: OK
+  client -> server  mlkem768 ciphertext + signature   4,485 bytes
+      kem_ciphertext             1,088 bytes
+      signature                  3,309 bytes
+  server checked client 1's signature: OK
+  both sides derived the same AES-256 key: True
+
+2. Client 1 sends its model update (FedAvg MLP from fl_mlp_fedavg)
+  model: 289 parameters -> 1,291 bytes before encryption
+  client -> server  encrypted update             1,393 bytes
+      ciphertext                 1,307 bytes
+  server decrypted it; weights identical to the original: True
+
+3. Server sends the global model back
+  server -> client  encrypted global model       1,393 bytes
+      ciphertext                 1,307 bytes
+  client decrypted it; identical: True
+
+4. Attacks (each must be rejected)
+  [REJECTED] MITM swaps the public key
+             Server signature is invalid: the public key may have been swapped by a man-in-the-middle. Handshake stopped.
+  [REJECTED] MITM swaps the key and re-signs with its own key
+             Server signature is invalid: the public key may have been swapped by a man-in-the-middle. Handshake stopped.
+  [REJECTED] MITM downgrades the key-exchange suite
+             Server replied with a different key-exchange suite.
+  [REJECTED] One bit of the encrypted update flipped
+             Decryption failed: the message or its header was changed.
+  [REJECTED] Unencrypted header changed
+             Decryption failed: the message or its header was changed.
+  [REJECTED] Valid update sent a second time
+             An update from client 1 was already accepted this round (replay).
+  [REJECTED] Round-1 handshake replayed in round 2
+             Client 1's signature is invalid: an impostor, or a changed or replayed handshake. Rejected.
+  [REJECTED] Unregistered client tries to join
+             Client 99 is not registered. Handshake refused.
+  [REJECTED] Impostor claims to be client 1
+             Client 1's signature is invalid: an impostor, or a changed or replayed handshake. Rejected.
+
+5. Size summary for one client, one round
+  handshake (3 messages)              9,260 bytes
+  model update, plaintext             1,291 bytes
+  model update, encrypted message     1,393 bytes (+102 bytes: 16-byte tag + header fields)

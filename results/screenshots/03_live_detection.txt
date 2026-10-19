@@ -1,0 +1,16 @@
+
+====================================================================
+  INTRUSION DETECTOR  -  live traffic demo
+====================================================================
+  detector : quantum (8 qubits, 81 parameters), trained by 3 companies working together
+  loaded   : models\trained\global_qnn.pt
+  traffic  : 82,332 unseen connections from UNSW-NB15
+
+  >>> incoming connection #10288
+      protocol tcp    service smtp      state FIN
+      duration 2.026s   sent 9,101 bytes   received 1,766 bytes
+      rate 22 packets/s   TTL out 62   TTL back 252
+
+      DETECTOR: *** ALERT: ATTACK ***
+                confidence 86.9%, decided in 38.9 ms
+      truth:    Exploits  ->  correct

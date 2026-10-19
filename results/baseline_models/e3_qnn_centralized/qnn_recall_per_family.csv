@@ -1,0 +1,11 @@
+family,share_correct
+Normal,0.5736537605696485
+Worms,0.6666666666666666
+Fuzzers,0.9782608695652174
+DoS,0.9838709677419355
+Exploits,0.9866863905325444
+Generic,0.9991273996509599
+Analysis,1.0
+Backdoor,1.0
+Reconnaissance,1.0
+Shellcode,1.0

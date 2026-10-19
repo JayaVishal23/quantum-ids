@@ -1,0 +1,54 @@
+
+Key exchange: mlkem768 | signatures: mldsa65
+  [PASS] Honest client: weights decrypt identically
+         -> weights arrived bit-for-bit identical in both directions
+  [PASS] MITM swaps the public key
+  [PASS] MITM swaps the key and re-signs with its own key
+  [PASS] MITM downgrades the key-exchange suite
+  [PASS] One bit of the encrypted update flipped
+  [PASS] Unencrypted header changed
+  [PASS] Valid update sent a second time
+  [PASS] Round-1 handshake replayed in round 2
+  [PASS] Unregistered client tries to join
+  [PASS] Impostor claims to be client 1
+
+Key exchange: mlkem768 | signatures: ed25519
+  [PASS] Honest client: weights decrypt identically
+         -> weights arrived bit-for-bit identical in both directions
+  [PASS] MITM swaps the public key
+  [PASS] MITM swaps the key and re-signs with its own key
+  [PASS] MITM downgrades the key-exchange suite
+  [PASS] One bit of the encrypted update flipped
+  [PASS] Unencrypted header changed
+  [PASS] Valid update sent a second time
+  [PASS] Round-1 handshake replayed in round 2
+  [PASS] Unregistered client tries to join
+  [PASS] Impostor claims to be client 1
+
+Key exchange: x25519 | signatures: mldsa65
+  [PASS] Honest client: weights decrypt identically
+         -> weights arrived bit-for-bit identical in both directions
+  [PASS] MITM swaps the public key
+  [PASS] MITM swaps the key and re-signs with its own key
+  [PASS] MITM downgrades the key-exchange suite
+  [PASS] One bit of the encrypted update flipped
+  [PASS] Unencrypted header changed
+  [PASS] Valid update sent a second time
+  [PASS] Round-1 handshake replayed in round 2
+  [PASS] Unregistered client tries to join
+  [PASS] Impostor claims to be client 1
+
+Key exchange: x25519 | signatures: ed25519
+  [PASS] Honest client: weights decrypt identically
+         -> weights arrived bit-for-bit identical in both directions
+  [PASS] MITM swaps the public key
+  [PASS] MITM swaps the key and re-signs with its own key
+  [PASS] MITM downgrades the key-exchange suite
+  [PASS] One bit of the encrypted update flipped
+  [PASS] Unencrypted header changed
+  [PASS] Valid update sent a second time
+  [PASS] Round-1 handshake replayed in round 2
+  [PASS] Unregistered client tries to join
+  [PASS] Impostor claims to be client 1
+
+All checks passed.

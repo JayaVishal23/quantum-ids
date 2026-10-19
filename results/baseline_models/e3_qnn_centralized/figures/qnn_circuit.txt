@@ -1,0 +1,38 @@
+0: ─╭AngleEmbedding(M0)─╭StronglyEntanglingLayers(M1)─┤  <Z>
+1: ─├AngleEmbedding(M0)─├StronglyEntanglingLayers(M1)─┤  <Z>
+2: ─├AngleEmbedding(M0)─├StronglyEntanglingLayers(M1)─┤  <Z>
+3: ─├AngleEmbedding(M0)─├StronglyEntanglingLayers(M1)─┤  <Z>
+4: ─├AngleEmbedding(M0)─├StronglyEntanglingLayers(M1)─┤  <Z>
+5: ─├AngleEmbedding(M0)─├StronglyEntanglingLayers(M1)─┤  <Z>
+6: ─├AngleEmbedding(M0)─├StronglyEntanglingLayers(M1)─┤  <Z>
+7: ─╰AngleEmbedding(M0)─╰StronglyEntanglingLayers(M1)─┤  <Z>
+
+M0 = 
+tensor([0., 0., 0., 0., 0., 0., 0., 0.])
+M1 = 
+tensor([[[0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.]],
+
+        [[0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.]],
+
+        [[0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.],
+         [0., 0., 0.]]])
