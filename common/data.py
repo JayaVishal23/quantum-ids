@@ -17,24 +17,27 @@ def _load_npz(path):
         return {name: data[name] for name in data.files}
 
 
-def load_client(client_id, part="train", small=True):
-    """One client's own data. part is "train" or "val"."""
-    suffix = "_small" if small else ""
-    return _load_npz(config.CLIENTS_DIR / f"client_{client_id}" / f"{part}{suffix}.npz")
+def load_client(client_id, part="train", small=True, wide=False):
+    """One client's own data. part is "train" or "val".
+
+    wide=True loads the all-39-feature arrays the amplitude-encoded model uses.
+    """
+    name = f"{part}{'_wide' if wide else ''}{'_small' if small else ''}.npz"
+    return _load_npz(config.CLIENTS_DIR / f"client_{client_id}" / name)
 
 
-def load_test(small=True):
-    suffix = "_small" if small else ""
-    return _load_npz(config.TEST_DIR / f"test{suffix}.npz")
+def load_test(small=True, wide=False):
+    name = f"test{'_wide' if wide else ''}{'_small' if small else ''}.npz"
+    return _load_npz(config.TEST_DIR / name)
 
 
-def load_pooled(part="train", small=True):
+def load_pooled(part="train", small=True, wide=False):
     """All clients' data stacked together.
 
     Only used for the centralised reference models, which show what we could
     reach if privacy didn't matter. The federated code never calls this.
     """
-    pieces = [load_client(client_id, part, small) for client_id in config.CLIENT_ATTACKS]
+    pieces = [load_client(client_id, part, small, wide) for client_id in config.CLIENT_ATTACKS]
     return {name: np.concatenate([piece[name] for piece in pieces]) for name in pieces[0]}
 
 

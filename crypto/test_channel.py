@@ -65,9 +65,13 @@ def must_be_rejected(action):
 
 def attacker_public_key(key_exchange):
     """A public key the attacker generated, for the suite in use."""
+    kem = mlkem.MLKEM768PrivateKey.generate().public_key().public_bytes_raw()
+    ecdh = x25519.X25519PrivateKey.generate().public_key().public_bytes_raw()
     if key_exchange == "x25519":
-        return x25519.X25519PrivateKey.generate().public_key().public_bytes_raw()
-    return mlkem.MLKEM768PrivateKey.generate().public_key().public_bytes_raw()
+        return ecdh
+    if key_exchange == "hybrid":
+        return kem + ecdh
+    return kem
 
 
 def example_weights():
@@ -129,6 +133,8 @@ def attack_swap_key_and_resign(scheme, key_exchange):
 def attack_downgrade_suite(scheme, key_exchange):
     """Attacker tries to make the client accept a weaker key exchange than it asked for."""
     server, client, _ = make_parties(scheme, key_exchange)
+    # Name the weakest suite that is not the one the client asked for, which is
+    # the swap an attacker would actually want to make.
     other = "x25519" if key_exchange != "x25519" else "mlkem768"
     server.start_round(1)
     reply = server.reply_to_hello(client.start_handshake(1))

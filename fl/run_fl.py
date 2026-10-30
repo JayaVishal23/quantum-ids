@@ -32,7 +32,7 @@ from crypto.secure_fl import NO_ENCRYPTION, SecureTransport
 from fl.aggregators import AGGREGATORS
 from fl.client import Client
 from fl.server import Server
-from models.factory import MODEL_NAMES
+from models.factory import MODEL_NAMES, uses_wide_features
 from training.loops import predict_probability, weights_size_in_bytes
 
 # Classical rounds are cheap, so they get enough rounds to finish improving
@@ -41,6 +41,7 @@ DEFAULTS = {
     "mlp":      {"rounds": 60, "local_epochs": 2, "lr": 0.001, "batch_size": 64},
     "tiny_mlp": {"rounds": 60, "local_epochs": 2, "lr": 0.001, "batch_size": 64},
     "qnn":      {"rounds": 15, "local_epochs": 1, "lr": 0.01,  "batch_size": 32},
+    "qnn_amplitude": {"rounds": 15, "local_epochs": 1, "lr": 0.01, "batch_size": 32},
 }
 
 
@@ -54,8 +55,12 @@ def parse_args():
     parser.add_argument("--lr", type=float)
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--out", default="runs", help="results sub-folder")
-    parser.add_argument("--secure", choices=[NO_ENCRYPTION, "x25519", "mlkem768"], default=NO_ENCRYPTION,
+    parser.add_argument("--secure", choices=[NO_ENCRYPTION, "x25519", "mlkem768", "hybrid"], default=NO_ENCRYPTION,
                         help="how the model updates are protected on the way to the server")
+    parser.add_argument("--threshold", choices=metrics.THRESHOLD_RULES,
+                        default="min_fpr_at_recall",
+                        help="how to pick the decision threshold from client validation counts; "
+                             "half keeps the untuned 0.5")
     parser.add_argument("--signature", choices=["mldsa65", "ed25519"], default="mldsa65",
                         help="signature scheme used to authenticate the handshake")
     parser.add_argument("--attack", choices=ATTACKS, default=NO_ATTACK,
@@ -138,6 +143,17 @@ def run_one_seed(args, seed, test):
     result = metrics.evaluate(test["y"], best_probability)
     last = metrics.evaluate(test["y"], last_probability)
     result.update({f"last_round_{name}": last[name] for name in metrics.METRIC_NAMES})
+
+    # The decision threshold, chosen from the clients' validation counts at the
+    # best round. The untuned 0.5 numbers above are kept so the two can be
+    # compared; "tuned_" are the same model read at a better operating point.
+    threshold = metrics.DEFAULT_THRESHOLD
+    if server.best_threshold_counts is not None:
+        threshold = metrics.choose_threshold(server.best_threshold_counts, rule=args.threshold)
+    tuned = metrics.evaluate(test["y"], best_probability, threshold=threshold)
+    result["threshold_rule"] = args.threshold
+    result["threshold"] = threshold
+    result.update({f"tuned_{name}": tuned[name] for name in metrics.METRIC_NAMES})
     result.update({
         "seed": seed,
         "parameters": metrics.count_parameters(server.model),
@@ -158,12 +174,39 @@ def run_one_seed(args, seed, test):
         "crypto_seconds_per_round": history["crypto_seconds"].mean(),
         "crypto_share_of_round": history["crypto_seconds"].sum() / history["round_seconds"].sum(),
     })
-    return result, history, best_probability, server.best_weights
+    return result, history, best_probability, server.best_weights, server.best_threshold_counts
+
+
+def threshold_study(threshold_inputs, y_true):
+    """Every threshold rule read off the same trained models.
+
+    Training does not depend on the rule, so one run answers the question for
+    all of them. Each rule is chosen from client validation counts only.
+    """
+    usable = [(seed, probability, counts) for seed, probability, counts in threshold_inputs
+              if counts is not None]
+    if not usable:
+        return None
+
+    rows = []
+    for rule in metrics.THRESHOLD_RULES:
+        for seed, probability, counts in usable:
+            threshold = metrics.choose_threshold(counts, rule=rule)
+            scores = metrics.evaluate(y_true, probability, threshold=threshold)
+            rows.append({"rule": rule, "seed": seed, "threshold": threshold,
+                         **{name: scores[name] for name in metrics.METRIC_NAMES}})
+
+    table = pd.DataFrame(rows)
+    averaged = table.groupby("rule", sort=False).mean(numeric_only=True).drop(columns="seed").reset_index()
+    print()
+    print("Decision threshold, chosen on client validation data only:")
+    print(averaged.to_string(index=False, float_format=lambda v: f"{v:.4f}"))
+    return table
 
 
 def main():
     args = parse_args()
-    test = data.load_test()
+    test = data.load_test(wide=uses_wide_features(args.model))
 
     name = f"fl_{args.model}_{args.aggregator}"
     if args.attack != NO_ATTACK:
@@ -187,9 +230,11 @@ def main():
         print(f"Attack:  client {args.malicious_client} is malicious ({args.attack})")
 
     results = []
+    threshold_inputs = []
     for seed in args.seeds:
-        result, history, probability, best_weights = run_one_seed(args, seed, test)
+        result, history, probability, best_weights, counts = run_one_seed(args, seed, test)
         results.append(result)
+        threshold_inputs.append((seed, probability, counts))
         history.to_csv(output_dir / f"history_seed{seed}.csv", index=False)
 
         if seed == args.seeds[0]:
@@ -204,6 +249,10 @@ def main():
                 output_dir / "recall_per_family.csv", header=["share_correct"])
             # Kept so the PQC demo can send a real trained model through the channel.
             torch.save(best_weights, output_dir / f"global_model_seed{seed}.pt")
+
+    study = threshold_study(threshold_inputs, test["y"])
+    if study is not None:
+        study.to_csv(output_dir / "threshold_study.csv", index=False)
 
     per_seed = pd.DataFrame(results)
     per_seed.to_csv(output_dir / "per_seed.csv", index=False)
@@ -225,6 +274,13 @@ def main():
     for metric, value in metrics.format_mean_std(summary).items():
         print(f"  {metric:20s} {value}")
     print(f"  best rounds per seed: {per_seed['best_round'].tolist()}")
+    if "threshold" in summary.index:
+        rule = per_seed["threshold_rule"].iloc[0]
+        print(f"Same model read at a tuned threshold ({rule}, "
+              f"{summary.loc['threshold', 'mean']:.2f} from client validation data):")
+        tuned_names = [f"tuned_{m}" for m in metrics.METRIC_NAMES]
+        for metric, value in metrics.format_mean_std(summary, tuned_names).items():
+            print(f"  {metric:32s} {value}")
     print("Last round:")
     last_names = [f"last_round_{m}" for m in metrics.METRIC_NAMES]
     for metric, value in metrics.format_mean_std(summary, last_names).items():

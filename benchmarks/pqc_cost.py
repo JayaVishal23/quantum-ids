@@ -117,14 +117,17 @@ def cost_per_round(timings):
     ms = dict(zip(timings["operation"], timings["mean_ms"]))
     clients = len(config.CLIENT_ATTACKS)
 
+    x25519_total = (ms["X25519 key generation"] + ms["X25519 client side (keygen + exchange)"]
+                    + ms["X25519 server side (exchange)"])
+    mlkem_total = (ms["ML-KEM-768 key generation"] + ms["ML-KEM-768 encapsulate"]
+                   + ms["ML-KEM-768 decapsulate"])
+
     suites = {
-        "X25519 + ML-DSA-65": (
-            ms["X25519 key generation"] + ms["X25519 client side (keygen + exchange)"]
-            + ms["X25519 server side (exchange)"]
-        ),
-        "ML-KEM-768 + ML-DSA-65": (
-            ms["ML-KEM-768 key generation"] + ms["ML-KEM-768 encapsulate"] + ms["ML-KEM-768 decapsulate"]
-        ),
+        "X25519 + ML-DSA-65": x25519_total,
+        "ML-KEM-768 + ML-DSA-65": mlkem_total,
+        # The hybrid suite really does run both exchanges, so its cost is the
+        # sum of the two. Everything else in the round is unchanged.
+        "Hybrid X25519+ML-KEM-768 + ML-DSA-65": x25519_total + mlkem_total,
     }
 
     signatures = 2 * ms["ML-DSA-65 sign"] + 2 * ms["ML-DSA-65 verify"]
@@ -160,8 +163,13 @@ def main():
     print("\nCost of one federated round (adding the operations up)\n")
     print(rounds.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
 
-    extra = (rounds.iloc[1]["per round, 3 clients (ms)"] - rounds.iloc[0]["per round, 3 clients (ms)"])
-    print(f"\nPost-quantum costs {extra:+.2f} ms per round compared with the classical suite.")
+    per_round = rounds.set_index("suite")["per round, 3 clients (ms)"]
+    classical = per_round["X25519 + ML-DSA-65"]
+    print()
+    for suite in per_round.index:
+        if suite != "X25519 + ML-DSA-65":
+            print(f"{suite} costs {per_round[suite] - classical:+.2f} ms per round "
+                  f"compared with the classical suite.")
 
     output_dir = config.RESULTS_DIR / "secured"
     output_dir.mkdir(parents=True, exist_ok=True)

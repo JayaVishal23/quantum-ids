@@ -41,6 +41,87 @@ def evaluate(y_true, attack_probability, threshold=0.5):
     }
 
 
+# ------------------------------------------------------------------
+# Choosing the decision threshold
+# ------------------------------------------------------------------
+#
+# A model outputs a probability; something has to turn that into a yes or no.
+# Using 0.5 is a habit, not a decision, and on this dataset it is a bad one:
+# the training file is 68% attacks while the test file is 55%, so a model
+# trained to 0.5 flags far too much normal traffic.
+#
+# The threshold is chosen on VALIDATION data only. In federated training no
+# client may send its validation rows anywhere, so each client reports only
+# four counts per candidate threshold and the server adds them up. Integers,
+# never records.
+
+DEFAULT_THRESHOLD = 0.5
+THRESHOLD_GRID = np.round(np.arange(0.05, 0.96, 0.01), 2)
+MIN_RECALL = 0.95          # a missed attack costs more than a false alarm
+THRESHOLD_RULES = ["half", "min_fpr_at_recall", "youden", "max_f1"]
+
+
+def confusion_counts_at_thresholds(y_true, attack_probability, grid=THRESHOLD_GRID):
+    """tp, fp, fn, tn at every candidate threshold. The only thing a client sends."""
+    y_true = np.asarray(y_true).astype(int)
+    probability = np.asarray(attack_probability)
+    positives = int(y_true.sum())
+    negatives = int(len(y_true) - positives)
+
+    flagged = probability[:, None] >= grid[None, :]
+    tp = (flagged & (y_true[:, None] == 1)).sum(axis=0)
+    fp = (flagged & (y_true[:, None] == 0)).sum(axis=0)
+    return pd.DataFrame({
+        "threshold": grid,
+        "tp": tp, "fp": fp,
+        "fn": positives - tp,
+        "tn": negatives - fp,
+    })
+
+
+def add_counts(tables):
+    """Sum the per-threshold counts reported by several clients."""
+    total = tables[0].copy()
+    for table in tables[1:]:
+        for column in ("tp", "fp", "fn", "tn"):
+            total[column] = total[column].to_numpy() + table[column].to_numpy()
+    return total
+
+
+def choose_threshold(counts, rule="min_fpr_at_recall", min_recall=MIN_RECALL):
+    """Pick one threshold from summed validation counts.
+
+    half               keep 0.5, the untuned baseline
+    min_fpr_at_recall  fewest false alarms while still catching min_recall of attacks
+    youden             best recall minus false positive rate (the usual ROC point)
+    max_f1             best balance of precision and recall
+    """
+    if rule == "half":
+        return DEFAULT_THRESHOLD
+    if rule not in THRESHOLD_RULES:
+        raise ValueError(f"Unknown rule '{rule}'. Choose from {THRESHOLD_RULES}.")
+
+    table = counts.copy()
+    with np.errstate(divide="ignore", invalid="ignore"):
+        table["recall"] = table["tp"] / (table["tp"] + table["fn"])
+        table["fpr"] = table["fp"] / (table["fp"] + table["tn"])
+        precision = table["tp"] / (table["tp"] + table["fp"])
+        table["f1"] = 2 * precision * table["recall"] / (precision + table["recall"])
+    table = table.fillna(0.0)
+
+    if rule == "youden":
+        return float(table.loc[(table["recall"] - table["fpr"]).idxmax(), "threshold"])
+    if rule == "max_f1":
+        return float(table.loc[table["f1"].idxmax(), "threshold"])
+
+    # min_fpr_at_recall: among thresholds that keep enough recall, take the
+    # lowest false positive rate. If none qualifies, keep the most sensitive.
+    eligible = table[table["recall"] >= min_recall]
+    if eligible.empty:
+        return float(table.loc[table["recall"].idxmax(), "threshold"])
+    return float(eligible.loc[eligible["fpr"].idxmin(), "threshold"])
+
+
 def recall_per_attack_family(y_true, attack_probability, attack_cat, threshold=0.5):
     """For each attack family: what share of its rows did the model catch?
     For Normal it shows the share correctly left alone."""

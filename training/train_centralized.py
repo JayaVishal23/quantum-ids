@@ -29,7 +29,7 @@ import torch
 from torch import nn
 
 from common import config, data, metrics
-from models.factory import MODEL_NAMES, build_model
+from models.factory import MODEL_NAMES, build_model, uses_wide_features
 from training.loops import average_loss, copy_weights, predict_probability, train_one_epoch
 
 # Sensible defaults per model. The QNN is much slower per step, so it gets
@@ -38,9 +38,11 @@ DEFAULTS = {
     "mlp":      {"lr": 0.001, "batch_size": 64, "epochs": 100, "patience": 10},
     "tiny_mlp": {"lr": 0.001, "batch_size": 64, "epochs": 100, "patience": 10},
     "qnn":      {"lr": 0.01,  "batch_size": 32, "epochs": 30,  "patience": 5},
+    "qnn_amplitude": {"lr": 0.01, "batch_size": 32, "epochs": 30, "patience": 5},
 }
 
 EXPERIMENT_FOLDER = {
+    "qnn_amplitude": "e4_qnn_amplitude",
     "mlp": "e1_centralized",
     "tiny_mlp": "e1_centralized",
     "qnn": "e3_qnn_centralized",
@@ -56,6 +58,9 @@ def parse_args():
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--patience", type=int)
     parser.add_argument("--max-rows", type=int, help="use only this many training rows (for timing tests)")
+    parser.add_argument("--threshold", choices=metrics.THRESHOLD_RULES,
+                        default="min_fpr_at_recall",
+                        help="how to pick the decision threshold on validation data")
     parser.add_argument("--qnn-device", default="default.qubit")
     parser.add_argument("--qnn-diff-method", default="backprop")
     args = parser.parse_args()
@@ -121,6 +126,16 @@ def run_one_seed(args, seed, train, val, test):
 
     probability = predict_probability(model, test["X"])
     result = metrics.evaluate(test["y"], probability)
+
+    # The decision threshold comes from the validation split, never the test set.
+    counts = metrics.confusion_counts_at_thresholds(
+        val["y"], predict_probability(model, val["X"]))
+    threshold = metrics.choose_threshold(counts, rule=args.threshold)
+    tuned = metrics.evaluate(test["y"], probability, threshold=threshold)
+    result["threshold_rule"] = args.threshold
+    result["threshold"] = threshold
+    result.update({f"tuned_{name}": tuned[name] for name in metrics.METRIC_NAMES})
+
     result.update({
         "seed": seed,
         "parameters": metrics.count_parameters(model),
@@ -136,13 +151,14 @@ def run_one_seed(args, seed, train, val, test):
 def main():
     args = parse_args()
 
-    train = data.load_pooled("train")
-    val = data.load_pooled("val")
-    test = data.load_test()
+    wide = uses_wide_features(args.model)
+    train = data.load_pooled("train", wide=wide)
+    val = data.load_pooled("val", wide=wide)
+    test = data.load_test(wide=wide)
     if args.max_rows:
         train = take_first_rows(train, args.max_rows)
 
-    output_dir = config.RESULTS_DIR / "baseline_models" / EXPERIMENT_FOLDER[args.model]
+    output_dir = config.RESULTS_DIR / "review1" / EXPERIMENT_FOLDER[args.model]
     figures_dir = output_dir / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
 
@@ -155,7 +171,7 @@ def main():
         result, history, _ = run_one_seed(args, args.seeds[0], train, val, test)
         rows_per_second = len(train["y"]) / history["seconds"].mean()
         print(f"\nTiming test: {rows_per_second:.1f} training rows per second (including validation)")
-        full_rows = len(data.load_pooled("train")["y"])
+        full_rows = len(data.load_pooled("train", wide=wide)["y"])
         print(f"Estimated time per epoch on {full_rows:,} rows: {full_rows / rows_per_second / 60:.1f} min")
         return
 

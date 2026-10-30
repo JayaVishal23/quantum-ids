@@ -21,6 +21,7 @@ straight through, so the same federated code runs in all three modes:
     none       no encryption at all (the "before" picture)
     x25519     today's classical key exchange (the comparison baseline)
     mlkem768   post-quantum key exchange (what we propose)
+    hybrid     X25519 and ML-KEM-768 together, as TLS is now deploying
 """
 
 import time

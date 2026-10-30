@@ -84,7 +84,7 @@ def main():
     print("\nTest sample, rows per attack family:")
     print(pd.Series(small_test["attack_cat"]).value_counts().to_string())
 
-    output_dir = config.RESULTS_DIR / "baseline_models"
+    output_dir = config.RESULTS_DIR / "review1"
     table.to_csv(output_dir / "subsample_summary.csv", index=False)
     print("\nAll samples within 1% of the original attack share.")
 

@@ -40,6 +40,7 @@ from training.loops import predict_probability
 # Where the already-trained detector lives (first one found is used).
 TRAINED_MODEL_PATHS = [
     config.PROJECT_ROOT / "models" / "trained" / "global_qnn.pt",
+    config.RESULTS_DIR / "review2" / "fl_qnn_fedavg" / "global_model_seed42.pt",
 ]
 
 ATTACK_FAMILIES = ["Exploits", "Generic", "DoS", "Reconnaissance", "Fuzzers",

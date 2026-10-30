@@ -19,7 +19,7 @@ from crypto.channel import ClientChannel, ServerChannel, generate_signing_key, p
 from crypto.payload import bytes_to_weights, weights_to_bytes
 from crypto.test_channel import CHECKS
 
-MODEL_FILE = config.PROJECT_ROOT / "models" / "trained" / "global_mlp.pt"
+MODEL_FILE = config.RESULTS_DIR / "review1" / "fl_mlp_fedavg" / "global_model_seed42.pt"
 
 
 def show(direction, message):
@@ -34,12 +34,13 @@ def show(direction, message):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--signature", choices=["mldsa65", "ed25519"], default="mldsa65")
-    parser.add_argument("--kem", choices=["mlkem768", "x25519"], default="mlkem768",
-                        help="mlkem768 = post-quantum, x25519 = the classical baseline")
+    parser.add_argument("--kem", choices=["mlkem768", "x25519", "hybrid"], default="mlkem768",
+                        help="mlkem768 = post-quantum, x25519 = the classical baseline, "
+                             "hybrid = both together")
     args = parser.parse_args()
 
     if not MODEL_FILE.exists():
-        raise SystemExit(f"Model not found: {MODEL_FILE}\nExpected a trained model there")
+        raise SystemExit(f"Model not found: {MODEL_FILE}\nRun first: python -m fl.run_fl --model mlp")
 
     print(f"Key exchange: {args.kem} | signatures: {args.signature} | encryption: AES-256-GCM\n")
 

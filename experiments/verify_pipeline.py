@@ -76,7 +76,7 @@ def check_features():
     print(f"  method                           : {chosen['method']}")
     print(f"  agreed features ({len(chosen['features'])})             : {', '.join(chosen['features'])}")
 
-    scores = pd.read_csv(config.RESULTS_DIR / "baseline_models" / "feature_scores_per_client.csv", index_col=0)
+    scores = pd.read_csv(config.RESULTS_DIR / "review1" / "feature_scores_per_client.csv", index_col=0)
     print("\n  each client's rank for the agreed features (they disagree = non-IID data):")
     ranks = scores.loc[chosen["features"], [c for c in scores.columns if c.endswith("_rank")]]
     print(ranks.to_string())

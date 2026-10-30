@@ -14,17 +14,18 @@ import torch
 from torch import nn
 
 from attacks.poisoning import LABEL_FLIP, MODEL_POISON, NO_ATTACK, flip_labels, poison_update
-from common import data
-from models.factory import build_model
-from training.loops import average_loss, copy_weights, train_one_epoch
+from common import data, metrics
+from models.factory import build_model, uses_wide_features
+from training.loops import average_loss, copy_weights, predict_probability, train_one_epoch
 
 
 class Client:
     def __init__(self, client_id, model_name, qnn_device="default.qubit", qnn_diff_method="backprop",
                  attack=NO_ATTACK):
         self.client_id = client_id
-        self.train_data = data.load_client(client_id, "train")
-        self.val_data = data.load_client(client_id, "val")
+        wide = uses_wide_features(model_name)
+        self.train_data = data.load_client(client_id, "train", wide=wide)
+        self.val_data = data.load_client(client_id, "val", wide=wide)
         self.model = build_model(model_name, qnn_device, qnn_diff_method)
         self.loss_fn = nn.BCEWithLogitsLoss()
 
@@ -64,10 +65,20 @@ class Client:
         }
 
     def evaluate_global(self, global_weights):
-        """Only a loss number and a row count leave the client, never the data."""
+        """Only numbers leave the client, never the data.
+
+        Besides the loss, the client reports how many attacks and how much
+        normal traffic it would flag at each candidate decision threshold.
+        Those are four integers per threshold, computed on its own validation
+        rows, and they are what lets the server tune the threshold without
+        seeing anybody's traffic.
+        """
         self.model.load_state_dict(global_weights)
+        probability = predict_probability(self.model, self.val_data["X"])
         return {
             "client_id": self.client_id,
             "num_rows": len(self.val_data["y"]),
             "val_loss": average_loss(self.model, self.val_data, self.loss_fn),
+            "threshold_counts": metrics.confusion_counts_at_thresholds(
+                self.val_data["y"], probability),
         }

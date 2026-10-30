@@ -130,7 +130,7 @@ def main():
         )
 
     # For the report and slides.
-    output_dir = config.RESULTS_DIR / "baseline_models"
+    output_dir = config.RESULTS_DIR / "review1"
     output_dir.mkdir(parents=True, exist_ok=True)
     score_table.to_csv(output_dir / "feature_scores_per_client.csv")
     top_k_table.to_csv(output_dir / "top8_per_client_vs_agreed.csv")

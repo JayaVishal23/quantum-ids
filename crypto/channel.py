@@ -30,9 +30,11 @@ THE HANDSHAKE (a new one every round)
 The "transcript" is every handshake message so far, in order. Both signatures
 cover it, so changing any message breaks a signature.
 
-TWO KEY-EXCHANGE SUITES, so the cost of going post-quantum can be measured:
+THREE KEY-EXCHANGE SUITES, so the cost of going post-quantum can be measured:
   "mlkem768"  ML-KEM-768, the post-quantum scheme standardised from Kyber
   "x25519"    the classical elliptic-curve exchange today's TLS uses
+  "hybrid"    both of the above together, which is what TLS is now deploying;
+              safe as long as either one of the two still holds
 
 Signatures can use ML-DSA-65 (post-quantum) or Ed25519 (classical, smaller).
 """
@@ -124,9 +126,66 @@ class X25519Suite:
         return private_key.exchange(x25519.X25519PublicKey.from_public_bytes(ciphertext))
 
 
+class HybridX25519MlKem768Suite:
+    """Both exchanges at once, so the session is safe if either one holds.
+
+    This is the construction TLS is now deploying as X25519MLKEM768. The two
+    exchanges run side by side and BOTH shared secrets go into HKDF, so an
+    attacker has to break ML-KEM-768 *and* X25519 to recover the session key.
+    That covers two different risks at the same time: a future quantum computer
+    breaking X25519, and a weakness being found in the newer lattice scheme,
+    which has had far less time in the field than elliptic curves.
+
+    The public keys and the ciphertexts are simply the two concatenated, in a
+    fixed order, so the lengths are known in advance and can be checked.
+    """
+
+    name = "hybrid"
+
+    KEM_PUBLIC_BYTES = 1184        # ML-KEM-768 public key
+    KEM_CIPHERTEXT_BYTES = 1088    # ML-KEM-768 ciphertext
+    ECDH_BYTES = 32                # X25519 public key, either direction
+
+    @staticmethod
+    def generate():
+        return (mlkem.MLKEM768PrivateKey.generate(), x25519.X25519PrivateKey.generate())
+
+    @staticmethod
+    def public_bytes(private_key):
+        kem_private, ecdh_private = private_key
+        return (MlKem768Suite.public_bytes(kem_private)
+                + X25519Suite.public_bytes(ecdh_private))
+
+    @classmethod
+    def _split(cls, data, first_length, what):
+        # An attacker who truncates or pads a message must not have it silently
+        # accepted with one half quietly ignored.
+        expected = first_length + cls.ECDH_BYTES
+        if len(data) != expected:
+            raise ChannelError(f"Hybrid {what} has the wrong length: "
+                               f"expected {expected} bytes, got {len(data)}.")
+        return data[:first_length], data[first_length:]
+
+    @classmethod
+    def encapsulate(cls, public_bytes):
+        kem_public, ecdh_public = cls._split(public_bytes, cls.KEM_PUBLIC_BYTES, "public key")
+        kem_secret, kem_ciphertext = MlKem768Suite.encapsulate(kem_public)
+        ecdh_secret, ecdh_ciphertext = X25519Suite.encapsulate(ecdh_public)
+        return kem_secret + ecdh_secret, kem_ciphertext + ecdh_ciphertext
+
+    @classmethod
+    def decapsulate(cls, private_key, ciphertext):
+        kem_private, ecdh_private = private_key
+        kem_ciphertext, ecdh_ciphertext = cls._split(
+            ciphertext, cls.KEM_CIPHERTEXT_BYTES, "ciphertext")
+        return (MlKem768Suite.decapsulate(kem_private, kem_ciphertext)
+                + X25519Suite.decapsulate(ecdh_private, ecdh_ciphertext))
+
+
 KEY_EXCHANGE_SUITES = {
     MlKem768Suite.name: MlKem768Suite,
     X25519Suite.name: X25519Suite,
+    HybridX25519MlKem768Suite.name: HybridX25519MlKem768Suite,
 }
 
 DEFAULT_KEY_EXCHANGE = MlKem768Suite.name

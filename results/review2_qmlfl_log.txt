@@ -1,0 +1,110 @@
+Federated: model qnn | fedavg | 3 clients | 30 rounds x 1 local epoch(s) | lr 0.01 | batch 32 | seeds [42, 43, 44]
+  seed 42 | round  1 | val loss 0.3535 | test acc 0.7732 | 25.2s <- best so far
+  seed 42 | round  2 | val loss 0.2632 | test acc 0.7922 | 20.6s <- best so far
+  seed 42 | round  3 | val loss 0.2453 | test acc 0.7910 | 11.2s <- best so far
+  seed 42 | round  4 | val loss 0.2443 | test acc 0.8088 | 9.7s <- best so far
+  seed 42 | round  5 | val loss 0.2333 | test acc 0.7904 | 9.9s <- best so far
+  seed 42 | round  6 | val loss 0.2254 | test acc 0.7918 | 9.8s <- best so far
+  seed 42 | round  7 | val loss 0.2255 | test acc 0.7922 | 10.3s
+  seed 42 | round  8 | val loss 0.2281 | test acc 0.8202 | 19.5s
+  seed 42 | round  9 | val loss 0.2203 | test acc 0.8006 | 20.1s <- best so far
+  seed 42 | round 10 | val loss 0.2139 | test acc 0.8044 | 20.0s <- best so far
+  seed 42 | round 11 | val loss 0.2118 | test acc 0.8052 | 20.1s <- best so far
+  seed 42 | round 12 | val loss 0.2246 | test acc 0.8060 | 18.8s
+  seed 42 | round 13 | val loss 0.2172 | test acc 0.8056 | 19.8s
+  seed 42 | round 14 | val loss 0.2111 | test acc 0.8060 | 19.7s <- best so far
+  seed 42 | round 15 | val loss 0.2107 | test acc 0.8056 | 20.2s <- best so far
+  seed 42 | round 16 | val loss 0.2131 | test acc 0.8044 | 19.8s
+  seed 42 | round 17 | val loss 0.2065 | test acc 0.8068 | 20.0s <- best so far
+  seed 42 | round 18 | val loss 0.2147 | test acc 0.8084 | 20.2s
+  seed 42 | round 19 | val loss 0.2067 | test acc 0.8106 | 20.4s
+  seed 42 | round 20 | val loss 0.2086 | test acc 0.8136 | 20.3s
+  seed 42 | round 21 | val loss 0.2105 | test acc 0.8136 | 20.4s
+  seed 42 | round 22 | val loss 0.2117 | test acc 0.8130 | 16.5s
+  seed 42 | round 23 | val loss 0.2082 | test acc 0.8136 | 9.1s
+  seed 42 | round 24 | val loss 0.2060 | test acc 0.8126 | 10.0s <- best so far
+  seed 42 | round 25 | val loss 0.2060 | test acc 0.8144 | 10.1s
+  seed 42 | round 26 | val loss 0.2055 | test acc 0.8138 | 10.0s <- best so far
+  seed 42 | round 27 | val loss 0.2117 | test acc 0.8148 | 10.0s
+  seed 42 | round 28 | val loss 0.2032 | test acc 0.8144 | 18.8s <- best so far
+  seed 42 | round 29 | val loss 0.2005 | test acc 0.8140 | 19.7s <- best so far
+  seed 42 | round 30 | val loss 0.2080 | test acc 0.8166 | 19.7s
+  seed 43 | round  1 | val loss 0.3579 | test acc 0.7662 | 19.8s <- best so far
+  seed 43 | round  2 | val loss 0.2525 | test acc 0.7858 | 19.8s <- best so far
+  seed 43 | round  3 | val loss 0.2351 | test acc 0.7870 | 20.1s <- best so far
+  seed 43 | round  4 | val loss 0.2265 | test acc 0.7866 | 20.1s <- best so far
+  seed 43 | round  5 | val loss 0.2227 | test acc 0.7870 | 19.7s <- best so far
+  seed 43 | round  6 | val loss 0.2221 | test acc 0.7876 | 19.7s <- best so far
+  seed 43 | round  7 | val loss 0.2272 | test acc 0.7918 | 20.0s
+  seed 43 | round  8 | val loss 0.2248 | test acc 0.8166 | 20.1s
+  seed 43 | round  9 | val loss 0.2139 | test acc 0.8138 | 19.1s <- best so far
+  seed 43 | round 10 | val loss 0.2234 | test acc 0.8146 | 20.5s
+  seed 43 | round 11 | val loss 0.2108 | test acc 0.8134 | 19.7s <- best so far
+  seed 43 | round 12 | val loss 0.2058 | test acc 0.8112 | 19.6s <- best so far
+  seed 43 | round 13 | val loss 0.2103 | test acc 0.8142 | 20.0s
+  seed 43 | round 14 | val loss 0.2057 | test acc 0.8122 | 20.2s <- best so far
+  seed 43 | round 15 | val loss 0.2050 | test acc 0.8144 | 20.6s <- best so far
+  seed 43 | round 16 | val loss 0.2074 | test acc 0.8130 | 20.6s
+  seed 43 | round 17 | val loss 0.2016 | test acc 0.8112 | 20.4s <- best so far
+  seed 43 | round 18 | val loss 0.2175 | test acc 0.8144 | 20.2s
+  seed 43 | round 19 | val loss 0.2143 | test acc 0.8140 | 20.5s
+  seed 43 | round 20 | val loss 0.2101 | test acc 0.8144 | 20.1s
+  seed 43 | round 21 | val loss 0.2139 | test acc 0.8298 | 19.9s
+  seed 43 | round 22 | val loss 0.2049 | test acc 0.8144 | 20.0s
+  seed 43 | round 23 | val loss 0.2083 | test acc 0.8142 | 20.3s
+  seed 43 | round 24 | val loss 0.2054 | test acc 0.8142 | 20.4s
+  seed 43 | round 25 | val loss 0.2026 | test acc 0.8140 | 19.9s
+  seed 43 | round 26 | val loss 0.2115 | test acc 0.8314 | 20.4s
+  seed 43 | round 27 | val loss 0.2008 | test acc 0.8132 | 20.2s <- best so far
+  seed 43 | round 28 | val loss 0.2154 | test acc 0.8294 | 20.3s
+  seed 43 | round 29 | val loss 0.2041 | test acc 0.8140 | 20.7s
+  seed 43 | round 30 | val loss 0.2017 | test acc 0.8140 | 21.0s
+  seed 44 | round  1 | val loss 0.2963 | test acc 0.7608 | 20.1s <- best so far
+  seed 44 | round  2 | val loss 0.2485 | test acc 0.7852 | 18.9s <- best so far
+  seed 44 | round  3 | val loss 0.2396 | test acc 0.7896 | 20.0s <- best so far
+  seed 44 | round  4 | val loss 0.2466 | test acc 0.7892 | 19.9s
+  seed 44 | round  5 | val loss 0.2463 | test acc 0.7908 | 19.9s
+  seed 44 | round  6 | val loss 0.2312 | test acc 0.7844 | 17.4s <- best so far
+  seed 44 | round  7 | val loss 0.2374 | test acc 0.7718 | 20.2s
+  seed 44 | round  8 | val loss 0.2335 | test acc 0.7788 | 20.3s
+  seed 44 | round  9 | val loss 0.2403 | test acc 0.7954 | 20.0s
+  seed 44 | round 10 | val loss 0.2374 | test acc 0.7986 | 20.1s
+  seed 44 | round 11 | val loss 0.2383 | test acc 0.8096 | 20.1s
+  seed 44 | round 12 | val loss 0.2183 | test acc 0.7968 | 20.3s <- best so far
+  seed 44 | round 13 | val loss 0.2237 | test acc 0.7980 | 20.2s
+  seed 44 | round 14 | val loss 0.2352 | test acc 0.8026 | 20.1s
+  seed 44 | round 15 | val loss 0.2240 | test acc 0.8042 | 20.2s
+  seed 44 | round 16 | val loss 0.2270 | test acc 0.8034 | 20.2s
+  seed 44 | round 17 | val loss 0.2174 | test acc 0.8040 | 20.2s <- best so far
+  seed 44 | round 18 | val loss 0.2310 | test acc 0.7984 | 20.2s
+  seed 44 | round 19 | val loss 0.2313 | test acc 0.8060 | 20.3s
+  seed 44 | round 20 | val loss 0.2354 | test acc 0.8144 | 20.4s
+  seed 44 | round 21 | val loss 0.2170 | test acc 0.8058 | 13.3s <- best so far
+  seed 44 | round 22 | val loss 0.2129 | test acc 0.8052 | 20.1s <- best so far
+  seed 44 | round 23 | val loss 0.2184 | test acc 0.8070 | 20.1s
+  seed 44 | round 24 | val loss 0.2230 | test acc 0.8002 | 20.0s
+  seed 44 | round 25 | val loss 0.2128 | test acc 0.8058 | 20.0s <- best so far
+  seed 44 | round 26 | val loss 0.2301 | test acc 0.8202 | 19.9s
+  seed 44 | round 27 | val loss 0.2067 | test acc 0.8050 | 20.0s <- best so far
+  seed 44 | round 28 | val loss 0.2126 | test acc 0.8056 | 19.6s
+  seed 44 | round 29 | val loss 0.2148 | test acc 0.8062 | 20.5s
+  seed 44 | round 30 | val loss 0.2058 | test acc 0.8038 | 20.7s <- best so far
+
+fl_qnn_fedavg: 81 parameters, update size 324 bytes per client
+Best round (chosen by validation loss):
+  accuracy             0.8103 +/- 0.0057
+  precision            0.7522 +/- 0.0057
+  recall               0.9777 +/- 0.0017
+  f1                   0.8502 +/- 0.0039
+  roc_auc              0.9364 +/- 0.0022
+  false_positive_rate  0.3947 +/- 0.0120
+  best rounds per seed: [29, 27, 30]
+Last round:
+  last_round_accuracy              0.8115 +/- 0.0068
+  last_round_precision             0.7538 +/- 0.0073
+  last_round_recall                0.9766 +/- 0.0006
+  last_round_f1                    0.8509 +/- 0.0045
+  last_round_roc_auc               0.9362 +/- 0.0020
+  last_round_false_positive_rate   0.3909 +/- 0.0156
+
+Saved to D:\SEMESTER-7\Quantum\quantum-project\results\review2\fl_qnn_fedavg

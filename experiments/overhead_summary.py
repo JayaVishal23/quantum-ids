@@ -21,12 +21,13 @@ import pandas as pd
 
 from common import config
 
-SECURED = config.RESULTS_DIR / "secure_channel"
+SECURED = config.RESULTS_DIR / "secured"
 
 RUNS = [
-    ("No encryption", config.RESULTS_DIR / "federated_models" / "fl_qnn_fedavg", "#898781"),
+    ("No encryption", config.RESULTS_DIR / "review2" / "fl_qnn_fedavg", "#898781"),
     ("X25519\n(classical)", SECURED / "fl_qnn_fedavg_x25519_mldsa65", "#2a78d6"),
     ("ML-KEM-768\n(post-quantum)", SECURED / "fl_qnn_fedavg_mlkem768_mldsa65", "#eb6834"),
+    ("Hybrid\nX25519 + ML-KEM", SECURED / "fl_qnn_fedavg_hybrid_mldsa65", "#4a3aa7"),
 ]
 
 SURFACE = "#fcfcfb"
@@ -48,6 +49,7 @@ def load():
 
         rows.append({
             "setting": label.replace("\n", " "),
+            "label": label,
             "colour": colour,
             "seeds": len(per_seed),
             "accuracy_mean": summary.loc["accuracy", "mean"],
@@ -66,7 +68,9 @@ def load():
 def draw(table, path):
     plt.rcParams["font.family"] = ["Segoe UI", "DejaVu Sans"]
     figure, (left, right) = plt.subplots(1, 2, figsize=(11, 4.8), facecolor=SURFACE)
-    labels = [label for label, _, _ in RUNS][:len(table)]
+    # Taken from the table, not from RUNS, so a run that has not been done yet
+    # cannot shift every other bar's label along by one.
+    labels = table["label"].tolist()
     positions = range(len(table))
 
     # What security costs.

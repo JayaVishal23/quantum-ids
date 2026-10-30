@@ -1,0 +1,23 @@
+6 runs: qnn, 8 rounds, 3 seeds each
+
+[1/6] aggregator=fedavg  attack=none
+    accuracy             0.7879 +/- 0.0037
+    recall               0.9833 +/- 0.0051
+[2/6] aggregator=median  attack=none
+    accuracy             0.8022 +/- 0.0082
+    recall               0.9815 +/- 0.0028
+[3/6] aggregator=fedavg  attack=label_flip
+    accuracy             0.7766 +/- 0.0239
+    recall               0.6789 +/- 0.0250
+[4/6] aggregator=median  attack=label_flip
+    accuracy             0.7771 +/- 0.0074
+    recall               0.8746 +/- 0.1391
+[5/6] aggregator=fedavg  attack=model_poison
+    accuracy             0.4407 +/- 0.0151
+    recall               0.0051 +/- 0.0088
+[6/6] aggregator=median  attack=model_poison
+    accuracy             0.7887 +/- 0.0163
+    recall               0.7399 +/- 0.0936
+
+All runs finished in 39 minutes.
+Now run: python -m experiments.poisoning_summary

@@ -131,7 +131,7 @@ def main():
     for client_id, (train_rows, val_rows) in parts.items():
         print(f"  client_{client_id}: {len(train_rows):,} train, {len(val_rows):,} val")
 
-    output_dir = config.RESULTS_DIR / "baseline_models"
+    output_dir = config.RESULTS_DIR / "review1"
     output_dir.mkdir(parents=True, exist_ok=True)
     table.to_csv(output_dir / "client_split_counts.csv")
 

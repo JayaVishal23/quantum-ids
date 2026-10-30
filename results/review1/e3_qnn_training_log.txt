@@ -1,0 +1,81 @@
+Model: qnn | train 9,000 rows | val 2,250 | test 5,000 | lr 0.01 | batch 32 | max epochs 30 | seeds [42, 43, 44]
+  seed 42 | epoch   1 | train loss 0.3401 | val loss 0.2367 | 21.6s
+  seed 42 | epoch   2 | train loss 0.2246 | val loss 0.2226 | 21.1s
+  seed 42 | epoch   3 | train loss 0.2164 | val loss 0.2223 | 21.3s
+  seed 42 | epoch   4 | train loss 0.2107 | val loss 0.2085 | 21.5s
+  seed 42 | epoch   5 | train loss 0.2063 | val loss 0.2050 | 21.8s
+  seed 42 | epoch   6 | train loss 0.2048 | val loss 0.2016 | 20.4s
+  seed 42 | epoch   7 | train loss 0.2032 | val loss 0.1983 | 19.1s
+  seed 42 | epoch   8 | train loss 0.2014 | val loss 0.1972 | 20.4s
+  seed 42 | epoch   9 | train loss 0.2001 | val loss 0.2026 | 20.9s
+  seed 42 | epoch  10 | train loss 0.2001 | val loss 0.1964 | 20.7s
+  seed 42 | epoch  11 | train loss 0.1985 | val loss 0.1979 | 11.5s
+  seed 42 | epoch  12 | train loss 0.1985 | val loss 0.1966 | 10.2s
+  seed 42 | epoch  13 | train loss 0.1975 | val loss 0.1948 | 10.4s
+  seed 42 | epoch  14 | train loss 0.1974 | val loss 0.1934 | 10.4s
+  seed 42 | epoch  15 | train loss 0.1971 | val loss 0.1934 | 10.1s
+  seed 42 | epoch  16 | train loss 0.1971 | val loss 0.1950 | 12.0s
+  seed 42 | epoch  17 | train loss 0.1969 | val loss 0.1938 | 10.2s
+  seed 42 | epoch  18 | train loss 0.1965 | val loss 0.1944 | 10.1s
+  seed 42 | epoch  19 | train loss 0.1956 | val loss 0.1939 | 10.2s
+  stopping early: no improvement for 5 epochs
+  seed 43 | epoch   1 | train loss 0.3256 | val loss 0.2238 | 9.9s
+  seed 43 | epoch   2 | train loss 0.2231 | val loss 0.2080 | 10.1s
+  seed 43 | epoch   3 | train loss 0.2144 | val loss 0.2020 | 10.0s
+  seed 43 | epoch   4 | train loss 0.2080 | val loss 0.2000 | 9.9s
+  seed 43 | epoch   5 | train loss 0.2037 | val loss 0.2039 | 10.2s
+  seed 43 | epoch   6 | train loss 0.2022 | val loss 0.1986 | 10.7s
+  seed 43 | epoch   7 | train loss 0.2002 | val loss 0.1988 | 10.2s
+  seed 43 | epoch   8 | train loss 0.1990 | val loss 0.1954 | 9.7s
+  seed 43 | epoch   9 | train loss 0.1991 | val loss 0.1939 | 17.3s
+  seed 43 | epoch  10 | train loss 0.1972 | val loss 0.1970 | 12.5s
+  seed 43 | epoch  11 | train loss 0.1962 | val loss 0.1920 | 20.8s
+  seed 43 | epoch  12 | train loss 0.1965 | val loss 0.1959 | 19.9s
+  seed 43 | epoch  13 | train loss 0.1953 | val loss 0.1943 | 19.9s
+  seed 43 | epoch  14 | train loss 0.1951 | val loss 0.1917 | 18.5s
+  seed 43 | epoch  15 | train loss 0.1944 | val loss 0.1895 | 9.3s
+  seed 43 | epoch  16 | train loss 0.1943 | val loss 0.1901 | 14.4s
+  seed 43 | epoch  17 | train loss 0.1938 | val loss 0.1898 | 10.9s
+  seed 43 | epoch  18 | train loss 0.1932 | val loss 0.1928 | 17.0s
+  seed 43 | epoch  19 | train loss 0.1921 | val loss 0.1932 | 20.2s
+  seed 43 | epoch  20 | train loss 0.1916 | val loss 0.1902 | 19.7s
+  stopping early: no improvement for 5 epochs
+  seed 44 | epoch   1 | train loss 0.3247 | val loss 0.2214 | 19.7s
+  seed 44 | epoch   2 | train loss 0.2163 | val loss 0.2119 | 19.1s
+  seed 44 | epoch   3 | train loss 0.2117 | val loss 0.2080 | 20.8s
+  seed 44 | epoch   4 | train loss 0.2094 | val loss 0.2175 | 20.7s
+  seed 44 | epoch   5 | train loss 0.2075 | val loss 0.2167 | 20.9s
+  seed 44 | epoch   6 | train loss 0.2062 | val loss 0.2075 | 20.6s
+  seed 44 | epoch   7 | train loss 0.2045 | val loss 0.2068 | 17.9s
+  seed 44 | epoch   8 | train loss 0.2042 | val loss 0.2046 | 20.2s
+  seed 44 | epoch   9 | train loss 0.2027 | val loss 0.2025 | 20.0s
+  seed 44 | epoch  10 | train loss 0.2008 | val loss 0.1999 | 20.2s
+  seed 44 | epoch  11 | train loss 0.1977 | val loss 0.2016 | 20.4s
+  seed 44 | epoch  12 | train loss 0.1976 | val loss 0.1990 | 14.3s
+  seed 44 | epoch  13 | train loss 0.1975 | val loss 0.1957 | 20.4s
+  seed 44 | epoch  14 | train loss 0.1953 | val loss 0.2206 | 20.2s
+  seed 44 | epoch  15 | train loss 0.1965 | val loss 0.2001 | 20.4s
+  seed 44 | epoch  16 | train loss 0.1951 | val loss 0.1949 | 20.7s
+  seed 44 | epoch  17 | train loss 0.1946 | val loss 0.1945 | 19.9s
+  seed 44 | epoch  18 | train loss 0.1949 | val loss 0.1928 | 15.5s
+  seed 44 | epoch  19 | train loss 0.1943 | val loss 0.1979 | 17.5s
+  seed 44 | epoch  20 | train loss 0.1945 | val loss 0.1982 | 13.2s
+  seed 44 | epoch  21 | train loss 0.1941 | val loss 0.1945 | 12.4s
+  seed 44 | epoch  22 | train loss 0.1931 | val loss 0.1913 | 12.1s
+  seed 44 | epoch  23 | train loss 0.1929 | val loss 0.1970 | 19.9s
+  seed 44 | epoch  24 | train loss 0.1941 | val loss 0.1931 | 17.3s
+  seed 44 | epoch  25 | train loss 0.1922 | val loss 0.1951 | 19.6s
+  seed 44 | epoch  26 | train loss 0.1929 | val loss 0.1921 | 19.6s
+  seed 44 | epoch  27 | train loss 0.1919 | val loss 0.1922 | 16.0s
+  stopping early: no improvement for 5 epochs
+
+qnn: 81 parameters, 3 seed(s)
+  accuracy             0.8044 +/- 0.0031
+  precision            0.7410 +/- 0.0033
+  recall               0.9912 +/- 0.0006
+  f1                   0.8480 +/- 0.0020
+  roc_auc              0.9377 +/- 0.0047
+  false_positive_rate  0.4244 +/- 0.0075
+  training seconds     361.6
+
+Saved to D:\SEMESTER-7\Quantum\quantum-project\results\review1\e3_qnn_centralized

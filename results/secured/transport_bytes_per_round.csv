@@ -1,0 +1,5 @@
+transport,handshake bytes,upload bytes,download bytes,total bytes,handshake per client
+No encryption,0,0,0,0,0
+X25519 (classical),21144,1536,1536,24216,7048
+ML-KEM-768 (post-quantum),27780,1536,1536,30852,9260
+Hybrid X25519 + ML-KEM-768,27960,1536,1536,31032,9320
