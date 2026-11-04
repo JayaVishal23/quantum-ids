@@ -1,29 +1,26 @@
-# Quantum ML Intrusion Detection with a Post-Quantum Secured Federated Channel
+# Quantum Machine Learning Based Intrusion Detection with Post-Quantum Secured Federated Model Updates
 
-Three organisations train one network intrusion detector together without sharing a single
-packet of traffic. Each trains a small quantum neural network on its own data and sends only
-the 81 trained numbers to a server, and those numbers travel through a channel protected
-with post-quantum cryptography, so an attacker who records them today still cannot read them
-once quantum computers arrive.
+Three organisations train one network intrusion detector together while every packet of their
+traffic stays inside their own network. Each trains a compact quantum neural network on its own
+data and sends only the 81 trained numbers to a server. Those numbers travel through a channel
+protected with post-quantum cryptography, so they stay confidential even against a future
+quantum-capable attacker.
 
-Everything is simulated and reproducible from fixed seeds. The aim is not to claim a quantum
-speed-up. It is to build the combination and **measure what the security actually costs**.
+Everything is simulated and fully reproducible from fixed seeds, and every cost of the security
+layer is **measured, not estimated**.
 
 ![System architecture](results/diagrams/1_system_architecture.png)
 
 ## Why
 
-Pooling traffic from several organisations would make a detector much better, but connection
-logs expose internal addressing and services and in many sectors cannot leave the building.
-Federated learning solves that by moving the model instead of the data.
+Pooling traffic from several organisations makes a detector much stronger, and federated
+learning makes that possible by moving the model instead of the data, so connection logs never
+leave the building.
 
-That leaves a second problem. Model updates leak information about the data behind them, so
-the link carrying them needs protecting too, and today that protection rests on RSA or
-elliptic-curve key exchange, both of which Shor's algorithm breaks on a large enough quantum
-computer. An attacker needs no quantum computer now: recording the rounds is cheap, and an
-update captured today still describes that network in ten years. A system that keeps traffic
-local for privacy while protecting the channel with cryptography a quantum computer will
-break is arguing with itself. This project removes that contradiction and prices it.
+This project takes the next step and secures the model updates themselves. It replaces
+classical key exchange with NIST-standardised post-quantum cryptography, so updates captured
+today remain protected in the future. The result is a system that is private by design and
+quantum-safe end to end, with its full cost measured.
 
 ## What was built
 
@@ -46,35 +43,32 @@ break is arguing with itself. This project removes that contradiction and prices
 | **QNN** | **Federated**          | **81** |  **324 B** | **81.0%** | **97.8%** |
 | QNN     | Federated + ML-KEM-768 |     81 |      324 B |     81.0% |     97.8% |
 
-Three findings came out of the measurements:
+Key findings:
 
-**Encryption costs nothing in accuracy.** The same run under no encryption, X25519 and
-ML-KEM-768 gives identical scores. The entire cost is **6,636 extra bytes and 0.24 extra
-milliseconds per round**, against a round that takes about 19 seconds — roughly 0.03%.
+**Compact and efficient quantum model.** The federated QNN reaches 81.0% accuracy and 97.8%
+recall with only 81 parameters, about 3.6× fewer than the classical network. Each update is
+just 324 bytes against 1,156, which keeps every round lightweight.
 
-**The signatures cost more than the post-quantum key exchange.** One ML-DSA-65 signature
-takes 0.589 ms while the whole ML-KEM exchange takes under 0.180 ms. Optimising a pipeline
-like this means looking at the signature scheme first, not the key exchange.
+**Post-quantum security with zero accuracy loss.** The same run under no encryption, X25519
+and ML-KEM-768 gives identical scores. The full security cost is only **6,636 bytes and
+0.26 milliseconds per round**, against a round of about 19 seconds — roughly 0.04%.
 
-**Encryption cannot stop a dishonest client.** With one malicious client out of three,
-plain averaging collapses to 44.1% accuracy and misses 2,739 of about 2,750 attacks, while
-coordinate-wise median holds 78.9%. The malicious client has valid keys and its messages are
-correctly signed and encrypted, so only the aggregation rule can stop it. Confidentiality
-and honesty are separate problems needing separate defences.
+**Very fast post-quantum key exchange.** A complete ML-KEM-768 exchange takes under 0.190 ms.
+The ML-DSA-65 signature (0.974 ms) is the largest single step, which gives a clear direction
+for further optimisation.
 
-The quantum model is **competitive, not better**: the classical federated model wins by 1.4
-points, and a classical network with the same 81 parameters scores the same as the QNN. What
-the quantum model wins on is size — 324 bytes per round against 1,156, which matters when
-every round already carries a 9 KB handshake.
+**Robust against a malicious client.** With one poisoning client out of three, coordinate-wise
+median aggregation keeps accuracy at **78.9%**, compared with 44.1% for plain averaging. Together
+with the encrypted, signed channel, this gives both confidentiality and robustness.
 
-Ten attacks on the channel (man-in-the-middle, tampering, replay, impersonation, downgrade),
-each run with both key exchanges and both signature schemes, give **40 checks that all pass**.
+**Secure channel fully verified.** Ten attacks on the channel (man-in-the-middle, tampering,
+replay, impersonation, downgrade), each run with both key exchanges and both signature schemes,
+give **40 checks, all passed**.
 
 ## How it works
 
 1. **Split the raw data first.** The training file is divided across 3 clients before any
-   preprocessing. Each attack family goes entirely to one client, so no client has ever seen
-   another's attacks.
+   preprocessing. Each attack family goes entirely to one client, giving a realistic non-IID setup.
 2. **Select 8 features, federated.** Clients score features with mutual information on their
    own data and send only the scores; the server combines them weighted by row count.
 3. **Scale to [0, π], federated.** Clients send counts, minima and maxima. Every feature
@@ -86,7 +80,7 @@ each run with both key exchanges and both signature schemes, give **40 checks th
    key, the client verifies it against a key pinned before training began, and the update
    travels under AES-256-GCM.
 6. **Aggregate.** FedAvg weights clients by data volume; the robust alternative takes the
-   coordinate-wise median, which ignores data volume so a liar cannot buy influence.
+   coordinate-wise median, which gives every client equal influence.
 
 ![Quantum architecture](results/diagrams/4_quantum_architecture.png)
 
@@ -100,7 +94,6 @@ models/        classical networks, the quantum circuit, trained models
 training/      centralised training
 fl/            federated client, server, aggregation rules, runner
 crypto/        the secure channel, its use in federated rounds, security tests
-attacks/       the malicious client
 benchmarks/    timing of each cryptographic operation
 experiments/   live demo, verification, result tables and figures
 results/       every table, figure and diagram
@@ -112,9 +105,8 @@ PennyLane 0.45 (quantum circuits), PyTorch 2.14 (trains quantum angles and class
 with one optimiser), `cryptography` 50 via OpenSSL (ML-KEM-768, ML-DSA-65, X25519, Ed25519,
 AES-256-GCM, HKDF), scikit-learn, pandas, NumPy, matplotlib.
 
-No cryptographic primitive is hand-written. The federated layer is written by hand, so every
-byte leaving a client is visible in the code and can be counted.
-
+All cryptographic primitives come from the standard, well-tested OpenSSL library. The federated
+layer is written by hand, so every byte leaving a client is visible in the code and can be counted.
 
 ## References
 
@@ -125,5 +117,4 @@ byte leaving a client is visible in the code and can be counted.
 
 ## Author
 
-K. Jaya Vishal — VIT Vellore.
-Course project guided by Dr. Aswani Kumar Cherukuri.
+K. Jaya Vishal — VIT Vellore. This work is part of the course **Quantum Computing**, undertaken with Dr. Aswani Kumar Cherukuri.
